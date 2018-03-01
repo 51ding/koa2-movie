@@ -11,8 +11,9 @@ function Dog(){
 	
 }
 
-Dog.prototype=Object.create(Animal.prototype);
 
 var dog=new Dog();
 
 dog.sleep();
+
+Dog.prototype=Object.create(Animal.prototype);
