@@ -1,6 +1,6 @@
 const delegate = require('delegates');
 
-
+/*
 function Wheel(name){
 	this.name=name;
 	this.length=20;
@@ -28,11 +28,23 @@ car.move();
 delegate(car,"wheel").getter("name")
 .method("wheelmove");
 
+
 console.log(car.name);
 
 car.wheelmove()
 
 
-method:挂载方法\n
+//method:挂载方法\n*/
+
+
+var context={
+	name:"context",
+	getName(){
+		console.log(this.name)
+	}
+}
+
+
+delegate(context,"ok").method("getName");
 
 
