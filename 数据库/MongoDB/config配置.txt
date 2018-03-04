@@ -1,0 +1,9 @@
+dbpath=E:\1.software\MongoDB\data\db
+logpath=E:\1.software\MongoDB\data\log\mongodb.log
+logappend=true
+journal=true
+quiet=true
+port=27017
+storageEngine=mmapv1
+#http能打开网页，访问网页用28017
+httpinterface=true

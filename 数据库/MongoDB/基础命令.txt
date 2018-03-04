@@ -1,0 +1,15 @@
+使用参数的方式
+mongod --dbpath E:\1.software\MongoDB\data\db -storageEngine=mmapv1
+
+
+使用config的配置配置MongoDB
+mongod --config E:\1.software\MongoDB\mongodb.config 
+
+
+安装服务
+mongod --config E:\1.software\MongoDB\mongodb.config --install --serviceName "MongoDB"
+
+卸载服务
+mongod --dbpath "E:\1.software\MongoDB\data\db" --logpath "E:\1.software\MongoDB\data\log\mongodb.log"  --remove 
+
+--serviceName "MongoDB"
