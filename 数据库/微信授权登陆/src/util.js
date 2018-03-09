@@ -14,5 +14,23 @@ module.exports={
 	//现在到1970-1-1 0:0:0 想查的秒数
 	getTimstamp(){
 		return Math.floor(Date.now()/1000);
+	},
+	//截取数组
+	/*
+	 @@param sourceArray 包含要复制的数据
+	 @@param sourceIndex sourceArray中复制开始处的索引
+	 @@param sourceArray 接收数据的数组
+	 @@param destinationIndex 它表示 destinationArray 中存储开始处的索引
+	 @@param length 它表示要复制的元素数目
+	 * */
+	arrayCopy(sourceArray,sourceIndex,destinationArray,destinationIndex,length){
+		if(!(sourceArray instanceof Array))
+			throw new Error("类型错误，只能是数组类型");
+		
+		if(!(destinationArray instanceof Array))
+			throw new Error("类型错误，只能是数组类型");
+			
+	    var 
+			
 	}
 }

@@ -1,3 +1,2 @@
-var WXBizMsgCrypt=require("../src/WXBizMsgCrypt");
-
-var wxcpt=new WXBizMsgCrypt();
+//测试aes加密算法
+var crypto = require('crypto');
