@@ -1,11 +1,12 @@
 module.exports={
 	wechat:{
-		corpID:"wx51da32eafd941f43",
+		corpID:"ww03e21166a06c5873",
 		application:[
 			{
-				agentId:"1000006",
-				secret:"kt_APv06l7aIqTlowTiWxpGyq1mhEl3vHIznUAGsVTU"
+				agentId:"1000004",
+				secret:"P_W5lQk7-RSU2hEF1TxudfyFnx53cfVl1Jru3vD_EbA"
 			}
+			
 		]	
 	},
 	getApplicationByAgentId:function(agentId){

@@ -1,3 +1,5 @@
+const sha1 = require("sha1");
+
 /*
  * 微信企业号加解密相关方法
  */
@@ -25,19 +27,18 @@ var WXBizMsgCryptErrorCode = {
 	//base64解密失败
 	WXBizMsgCrypt_DecodeBase64_Error: -40010,
 	//生成xml失败
-	WXBizMsgCrypt_CreateXML_Error:-40011
+	WXBizMsgCrypt_CreateXML_Error: -40011
 }
 
-function WXBizMsgCrypt(config={}){
-	if(!config.sToken || !config.sEncodingAESKey || !config.sCorpID) 
+function WXBizMsgCrypt(config = {}) {
+	if(!config.sToken || !config.sEncodingAESKey || !config.sCorpID)
 		throw new Error("配置不齐全！");
 	if(!(this instanceof WXBizMsgCrypt)) return new WXBizMsgCrypt(config);
-	
-	this.m_sToken=config.sToken;
-	this.m_sEncodingAESKey=config.sEncodingAESKey;
-	this.m_sCorpID=config.sCorpID;
-}
 
+	this.m_sToken = config.sToken;
+	this.m_sEncodingAESKey = config.sEncodingAESKey;
+	this.m_sCorpID = config.sCorpID;
+}
 
 //**验证URL
 // @param sMsgSignature: 签名串，对应URL参数的msg_signature
@@ -47,33 +48,57 @@ function WXBizMsgCrypt(config={}){
 // @param sReplyEchoStr: 解密之后的echostr，当return返回0时有效
 // @return：成功0，失败返回对应的错误码
 //**
-WXBizMsgCrypt.prototype.VerifyURL=function(sMsgSignature, sTimeStamp,sNonce,sEchoStr,sReplyEchoStr){
-	int ret=0;
-	if(this.m_sEncodingAESKey.length!=43)
+WXBizMsgCrypt.prototype.VerifyURL = function(sMsgSignature, sTimeStamp, sNonce, sEchoStr, sReplyEchoStr) {
+	var ret = 0;
+	if(this.m_sEncodingAESKey.length != 43)
 		return WXBizMsgCryptErrorCode.WXBizMsgCrypt_IllegalAesKey;
+		
+	ret = VerifySignature(this.m_sToken, sTimeStamp, sNonce, sEchoStr, sMsgSignature);
+	if(ret != 0){
+		return ret;
+	}
+	var sReplyEchoStr="";
+	var cpid = "";
 	
 }
-
 
 /**
  * 校验签名
-**/
-WXBizMsgCrypt.prototype.VerifySignature=function(sToken,sTimeStamp,sNonce,sMsgEncrypt,sSigture){
-	
+ **/
+WXBizMsgCrypt.VerifySignature = function(sToken, sTimeStamp, sNonce, sMsgEncrypt, sSigture) {
+	let hash="";
+	let ret=0;
+  	hash=WXBizMsgCrypt.GenarateSinature(sToken,sTimeStamp,sNonce,sMsgEncrypt);
+  	if(hash==sSigture){
+  		return 0
+  	}
+  	else{
+  		return WXBizMsgCryptErrorCode.WXBizMsgCrypt_ValidateSignature_Error;
+  	}
 }
 
 /**
- * 生成签名
-**/
-WXBizMsgCrypt.prototype.VerifySignature=function(sToken,sTimeStamp,sNonce,sMsgEncrypt,sSigture){
-	var AL=[];
+ * 静态方法生成签名
+ * return 
+ **/
+WXBizMsgCrypt.GenarateSinature = function(sToken, sTimeStamp, sNonce, sMsgEncrypt) {
+	var sVerifyEchoStr = "";
+	let AL = [];
 	AL.push(sToken);
 	AL.push(sTimeStamp);
 	AL.push(sNonce);
 	AL.push(sMsgEncrypt);
-	AL=AL.sort();
-	
+	AL = AL.sort();
+	let raw = "";
+	for(let i = 0; i < AL.length; i++) {
+		raw += AL[i];
+	}
+
+	var hash = "";
+	var dataToHash = Buffer.from(raw, "ascii");
+	hash=sha1(dataToHash);
+	//生成的签名既是这个哈希值
+	return hash;
 }
 
-
-module.exports=WXBizMsgCrypt;
+module.exports = WXBizMsgCrypt;
