@@ -3,6 +3,7 @@
  */
 //一个加密解密的库
 var crypto = require('crypto');
+var util=require("./util");
 
 function Cryptography() {
 
@@ -14,32 +15,34 @@ function Cryptography() {
   @param EncodingAESKey Aes加密字符串
   @param corpid
  */
-Cryptography.AES_decrypt = function(Input, EncodingAESKey, corpid) {
+Cryptography.AES_decrypt = function(Input, EncodingAESKey) {
+
 	var oriMsg = "";
 	var Key = Buffer.from(EncodingAESKey + "=", "base64");
 	//截取前16个字节
 	var Iv = Key.slice(0, 16);
-
 	var btmpMsg = Buffer.from(Cryptography.AES_decryptArray(Input, Iv, Key));
-
+  console.log(btmpMsg);
 	var len = btmpMsg.readInt32LE(16);
 
 	len = Cryptography.NetworkToHostOrder(len.toString());
 	
-	var bMsg=Buffer.alloc(len);
+	var bMsg=util.arrayCopy(btmpMsg,20,len);
 	
-	var bCorpid=Buffer.alloc(btmpMsg.Length - 20 - len);
+	var bCorpid=util.arrayCopy(btmpMsg,20+len,btmpMsg.length - 20 - len);
 	
+	var oriMsg = bMsg.toString("utf8");
 	
+	var corpid=bCorpid.toString("utf8");
 	
-	return len;
+	return {oriMsg:oriMsg,corpid:corpid};
 }
 
 /*
  使用Rijndael算法解密数据
  * */
 Cryptography.AES_decryptArray = function(Input, Iv, Key) {
-
+  console.log(Key);
 	var clearEncoding = 'utf8';
 	var cipherEncoding = 'base64';
 	var cipherChunks = [];
@@ -50,6 +53,15 @@ Cryptography.AES_decryptArray = function(Input, Iv, Key) {
 	return cipherChunks.join('');
 
 }
+
+/*
+ * 对用户回复消息的解密
+ */
+Cryptography.AES_decryptFromUser=function(){
+	
+}
+
+
 
 /*
  将整数值由网络字节顺序转换为主机字节顺序。

@@ -1,5 +1,6 @@
 const sha1 = require("sha1");
-
+const Cryptography=require("./Cryptography");
+const xml2js=require("xml2js");
 /*
  * 微信企业号加解密相关方法
  */
@@ -48,19 +49,64 @@ function WXBizMsgCrypt(config = {}) {
 // @param sReplyEchoStr: 解密之后的echostr，当return返回0时有效
 // @return：成功0，失败返回对应的错误码
 //**
-WXBizMsgCrypt.prototype.VerifyURL = function(sMsgSignature, sTimeStamp, sNonce, sEchoStr, sReplyEchoStr) {
+WXBizMsgCrypt.prototype.VerifyURL = function(sMsgSignature, sTimeStamp, sNonce, sEchoStr) {
 	var ret = 0;
 	if(this.m_sEncodingAESKey.length != 43)
-		return WXBizMsgCryptErrorCode.WXBizMsgCrypt_IllegalAesKey;
+		return {errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_IllegalAesKey,echoStr:""};
 		
-	ret = VerifySignature(this.m_sToken, sTimeStamp, sNonce, sEchoStr, sMsgSignature);
+	ret = WXBizMsgCrypt.VerifySignature(this.m_sToken, sTimeStamp, sNonce, sEchoStr, sMsgSignature);
 	if(ret != 0){
-		return ret;
+		return {errcode:ret,echoStr:""};
 	}
-	var sReplyEchoStr="";
+	
 	var cpid = "";
 	
+	var aesResult=Cryptography.AES_decrypt(sEchoStr,this.m_sEncodingAESKey);
+	
+	
+	if(aesResult.corpid!=this.m_sCorpID)
+		return {errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_ValidateCorpid_Error,echoStr:""};
+		
+	return {errcode:0,echoStr:aesResult.oriMsg};
+	
+	
 }
+
+
+// 检验消息的真实性，并且获取解密后的明文
+// @param sMsgSignature: 签名串，对应URL参数的msg_signature
+// @param sTimeStamp: 时间戳，对应URL参数的timestamp
+// @param sNonce: 随机串，对应URL参数的nonce
+// @param sPostData: 密文，对应POST请求的数据
+// @param sMsg: 解密后的原文，当return返回0时有效
+// @return: 成功0，失败返回对应的错误码
+WXBizMsgCrypt.prototype.DecryptMsg=function(sMsgSignature,sTimeStamp,sNonce,sPostData){
+	if(this.m_sEncodingAESKey.length != 43)
+		return Promise.reject({errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_IllegalAesKey,sMsg:""});
+	var raw="";
+	var sEncryptMsg="";
+	return new Promise((resolve,reject) =>{
+		xml2js.parseString(sPostData,(err,result)=>{
+			if(err)   reject({errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_ParseXml_Error,sMsg:""});
+			var sEncryptMsg=result.xml.Encrypt[0];
+			
+			var ret=0;
+			ret = WXBizMsgCrypt.VerifySignature(this.m_sToken, sTimeStamp, sNonce, sEncryptMsg, sMsgSignature);
+			
+			if(ret!=0) reject({errcode:ret,sMsg:""}) 
+			var cpid = "";
+			var data=Cryptography.AES_decrypt(sEncryptMsg,this.m_sEncodingAESKey);
+		  resolve(sEncryptMsg);		
+		})
+	})
+}
+
+
+
+
+
+
+
 
 /**
  * 校验签名
@@ -100,5 +146,8 @@ WXBizMsgCrypt.GenarateSinature = function(sToken, sTimeStamp, sNonce, sMsgEncryp
 	//生成的签名既是这个哈希值
 	return hash;
 }
+
+
+
 
 module.exports = WXBizMsgCrypt;

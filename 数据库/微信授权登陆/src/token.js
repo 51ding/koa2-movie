@@ -61,8 +61,8 @@ Token.prototype.getJSSDKToken=async function(agentId){
 		if(Date.now()>jstoken.expiresIn){
 			
 			var tokenResult=JSON.parse(await this.createJsSDKToken(agentId));
-			token.expiresIn=Date.now()+(tokenResult.expires_in-20)*1000;
-			token.ticket=tokenResult.ticket
+			jstoken.expiresIn=Date.now()+(tokenResult.expires_in-20)*1000;
+			jstoken.ticket=tokenResult.ticket
 			return Promise.resolve(tokenResult.ticket)
 		}
 		else{

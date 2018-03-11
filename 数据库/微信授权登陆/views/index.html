@@ -24,7 +24,11 @@
 	</style>
 </head>
 <body>
-	<div >分享给我的好友</div>
+	<div id="btn">分享给我的好友</div>
+	<div id="start">开始录音</div>
+	<div id="stop">停止录音</div>
+	<div id="play">播放</div>
+	
 	<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 	<script type="text/javascript" src="https://cdn.bootcss.com/jquery/1.9.0/jquery.min.js"></script>
 	<script type="text/javascript">
@@ -38,11 +42,11 @@
 					wx.config({
 					    beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
 					    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-					    appId: 'wx51da32eafd941f43', // 必填，企业微信的corpID
+					    appId: 'ww03e21166a06c5873', // 必填，企业微信的corpID
 					    timestamp:result.timestamp , // 必填，生成签名的时间戳
 					    nonceStr: result.nonceStr, // 必填，生成签名的随机串
 					    signature: result.signature,// 必填，签名，见[附录1](#11974)
-					    jsApiList: ["getLocation"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+					    jsApiList: ["getLocation","startRecord","stopRecord","onVoiceRecordEnd","playVoice","pauseVoice"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
 					});
 					
 					wx.ready(function(){
@@ -62,6 +66,29 @@
 			})
 			
 			
+			var id="";
+			
+			document.getElementById("btn").onclick=function(){
+				//wx.startRecord();
+			}
+			
+			document.getElementById("start").onclick=function(){
+				wx.startRecord();
+			}
+			
+			document.getElementById("stop").onclick=function(){
+								wx.stopRecord({
+				    success: function (res) {
+				        id = res.localId;
+				    }
+			});
+			}
+			
+			document.getElementById("play").onclick=function(){
+								wx.playVoice({
+				    localId: id // 需要播放的音频的本地ID，由stopRecord接口获得
+							});
+			}
 			
 			
 		})();
