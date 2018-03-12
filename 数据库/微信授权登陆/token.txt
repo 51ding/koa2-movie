@@ -1,4 +1,0 @@
-msg_signature:undefined
- echostr:undefined
- timestamp:undefined
- nonce:undefined

@@ -23,14 +23,13 @@ module.exports={
 	 @@param destinationIndex 它表示 destinationArray 中存储开始处的索引
 	 @@param length 它表示要复制的元素数目
 	 * */
-	arrayCopy(sourceArray,sourceIndex,destinationArray,destinationIndex,length){
-		if(!(sourceArray instanceof Array))
-			throw new Error("类型错误，只能是数组类型");
+	arrayCopy(sourceArray,sourceIndex,length){
+		if(!Buffer.isBuffer(sourceArray))
+			throw new Error("不是Buffer类型！");
 		
-		if(!(destinationArray instanceof Array))
-			throw new Error("类型错误，只能是数组类型");
-			
-	    destinationArray=sourceArray.slice(sourceIndex);
+	  var destinationArray=sourceArray.slice(sourceIndex,sourceIndex+length);
+	  
+	  return destinationArray;
 			
 	}
 }

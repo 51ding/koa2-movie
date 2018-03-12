@@ -6,6 +6,7 @@ var Router=require("koa-router");
 var views=require("koa-views");
 var sha1=require("sha1");
 var fs=require("fs");
+var WXBizMsgCrypt = require("./src/WXBizMsgCrypt");
 
 const ejs = require('ejs');
 var config=require("./src/config");
@@ -37,7 +38,7 @@ router.get("/",async (ctx,next) =>{
 
 //js-sdk授权验证
 router.get("/getSignature",async (ctx,next) =>{
-	var jsapi_ticket=await token.getJSSDKToken("1000006");
+	var jsapi_ticket=await token.getJSSDKToken("1000004");
 	var noncestr=util.generateRandomNumer(16);
 	var timestamp=util.getTimstamp();
 	var url=ctx.query.url;
@@ -55,22 +56,26 @@ router.get("/getSignature",async (ctx,next) =>{
 
 
 //消息验证
-router.get("/test",async (ctx,next)=>{
+router.get("/VerifyURL",async (ctx,next)=>{
 	var msg_signature=ctx.query.msg_signature;
-	console.log(msg_signature);
 	var echostr=ctx.query.echostr;
-	var token="14VrbNoEMj6RGdZEGa80RFY";
-	var timestamp=ctx.query.timestamp;
+  var timestamp=ctx.query.timestamp;
 	var nonce=ctx.query.nonce;
-	var validateStr=[token,timestamp,nonce].sort().join("");
-	var str=`msg_signature:${msg_signature}\n echostr:${echostr}\n timestamp:${timestamp}\n nonce:${nonce}`;
-	fs.writeFile("./token.txt",str,err => {
-		
+	
+	var aplication=config.getApplicationByAgentId("1000005");
+	
+	var wxcpt = new WXBizMsgCrypt({
+			sToken: aplication.token,
+			sCorpID:config.wechat.corpID,
+			sEncodingAESKey: aplication.EncodingAESKey
 	});
-	if(validateStr === msg_signature)
-		ctx.body=echostr;
-	else
-		ctx.body="wrong!";
+	
+	var result=wxcpt.VerifyURL(msg_signature,timestamp,nonce,echostr);
+	
+	if(result.errcode!=0)
+		ctx.body="认证失败！";
+	
+	ctx.body=result.echoStr;
 })
 
 
