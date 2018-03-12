@@ -21,8 +21,8 @@ Cryptography.AES_decrypt = function(Input, EncodingAESKey) {
 	var Key = Buffer.from(EncodingAESKey + "=", "base64");
 	//截取前16个字节
 	var Iv = Key.slice(0, 16);
-	var btmpMsg = Buffer.from(Cryptography.AES_decryptArray(Input, Iv, Key));
-  console.log(btmpMsg);
+	var btmpMsg = Cryptography.AES_decryptArray(Input, Iv, Key);
+	
 	var len = btmpMsg.readInt32LE(16);
 
 	len = Cryptography.NetworkToHostOrder(len.toString());
@@ -42,17 +42,33 @@ Cryptography.AES_decrypt = function(Input, EncodingAESKey) {
  使用Rijndael算法解密数据
  * */
 Cryptography.AES_decryptArray = function(Input, Iv, Key) {
-  console.log(Key);
 	var clearEncoding = 'utf8';
 	var cipherEncoding = 'base64';
 	var cipherChunks = [];
 	var decipher = crypto.createDecipheriv('aes-256-cbc', Key, Iv);
-	decipher.setAutoPadding(true);
+	decipher.setAutoPadding(false);
 	cipherChunks.push(decipher.update(Input, cipherEncoding, clearEncoding));
 	cipherChunks.push(decipher.final(clearEncoding));
-	return cipherChunks.join('');
+	var xXml=Buffer.from(cipherChunks.join(''));
+	
+	var xBuff=Cryptography.decode2(xXml);
+	
+	return xBuff;
 
 }
+
+
+Cryptography.decode2=function(decrypted){
+	var pad=decrypted[decrypted.length-1];
+	if (pad < 1 || pad > 32){
+		pad=0;
+	}
+	var res=Buffer.alloc(decrypted.length - pad);
+	res=util.arrayCopy(decrypted,0,decrypted.length - pad)
+	return res;
+}
+
+
 
 /*
  * 对用户回复消息的解密
@@ -60,7 +76,6 @@ Cryptography.AES_decryptArray = function(Input, Iv, Key) {
 Cryptography.AES_decryptFromUser=function(){
 	
 }
-
 
 
 /*

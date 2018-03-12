@@ -85,6 +85,7 @@ WXBizMsgCrypt.prototype.DecryptMsg=function(sMsgSignature,sTimeStamp,sNonce,sPos
 		return Promise.reject({errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_IllegalAesKey,sMsg:""});
 	var raw="";
 	var sEncryptMsg="";
+	
 	return new Promise((resolve,reject) =>{
 		xml2js.parseString(sPostData,(err,result)=>{
 			if(err)   reject({errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_ParseXml_Error,sMsg:""});
@@ -95,8 +96,23 @@ WXBizMsgCrypt.prototype.DecryptMsg=function(sMsgSignature,sTimeStamp,sNonce,sPos
 			
 			if(ret!=0) reject({errcode:ret,sMsg:""}) 
 			var cpid = "";
-			var data=Cryptography.AES_decrypt(sEncryptMsg,this.m_sEncodingAESKey);
-		  resolve(sEncryptMsg);		
+			var data;
+			try{
+				data=Cryptography.AES_decrypt(sEncryptMsg,this.m_sEncodingAESKey);
+			}
+			catch(exception){
+				 reject({errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_DecryptAES_Error,sMsg:""})
+			}
+		  	
+		  	if(data.corpid!=this.m_sCorpID)
+		  		reject({errcode:WXBizMsgCryptErrorCode.WXBizMsgCrypt_ValidateCorpid_Error,sMsg:""});
+		    
+		  	
+		  	//返回解密以后的消息体对象
+		  	xml2js.parseString(data.oriMsg,(err,xmlResult)=>{
+		  		resolve({errcode:ret,sMsg:xmlResult.xml});
+		  	})
+		  	  	
 		})
 	})
 }
