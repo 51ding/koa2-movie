@@ -30,7 +30,7 @@ module.exports={
 		if(!(destinationArray instanceof Array))
 			throw new Error("类型错误，只能是数组类型");
 			
-	    var 
+	    destinationArray=sourceArray.slice(sourceIndex);
 			
 	}
 }
