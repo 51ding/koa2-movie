@@ -13,7 +13,7 @@ var config = {
 var canReequest = false;
 
 sql.connect(config).then(async pool => {
-	var i = 126;
+	var i = 48759;
 	var result=await pool.request()
       .query("select name as customerName from Base_UpOrLower where [type]!='P' and Level<6 order by name asc");
 	var length = result.recordset.length;

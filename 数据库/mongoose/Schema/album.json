@@ -1,0 +1,30 @@
+[
+ {
+	"composr":"A",
+	"title":"当爱已成往事",
+	"price":12,
+	"releaseData":"2017-2-4",
+	"isPublication":false,
+	"genre":["A","B","C"],
+	"tracks":[
+	        {
+	        	"title":"第一章",
+	        	"duration":
+	        	{
+	        		"m":12,
+	        		"s":1
+	        	}
+	        },
+	        {
+	        	"title":"第二章",
+	        	"duration":
+	        	{
+	        		"m":12,
+	        		"s":1
+	        	}
+	        } 
+	 ]
+ }
+ ]
+
+

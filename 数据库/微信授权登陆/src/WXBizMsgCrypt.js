@@ -117,13 +117,6 @@ WXBizMsgCrypt.prototype.DecryptMsg=function(sMsgSignature,sTimeStamp,sNonce,sPos
 	})
 }
 
-
-
-
-
-
-
-
 /**
  * 校验签名
  **/
