@@ -1,25 +1,21 @@
 var mongoose=require("mongoose");
-const Schema=mongoose.Schema;
+require("./Schema/User");
 
 mongoose.connect("mongodb://127.0.0.1:27017/wechat");
 
-//创建表
-const UserSchema=new Schema({
-	name:String,
-	age:Number,
-	Birthday:Date
-})
+var User=mongoose.model("User");
 
-//定义模型
-const User = mongoose.model('User', UserSchema);
-const user = new User();
-user.name="wangwu";
-user.age=12;
-user.Birthday=new Date();
+var user=new User();
+user.name="占隔三";
+user.password="123";
+user.email="abc@153.com";
+
+
+
 //插入数据
-//user.save(function (err) {
-//console.log("保存陈功！");
-//});
+user.save(function (err) {
+	console.log("保存陈功！");
+});
 
 //查询数据
 //User.find({name:"wangwu"}, function (err, docs) {
@@ -27,7 +23,7 @@ user.Birthday=new Date();
 //});
 
 //查询一条数据u
-User.findOne()
+
 
 
 
